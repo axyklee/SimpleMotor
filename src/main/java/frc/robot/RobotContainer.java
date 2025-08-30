@@ -9,19 +9,21 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.SimpleMotor;
+import frc.robot.subsystems.SimpleSpark;
+import frc.robot.subsystems.SimpleTalon;
 
 public class RobotContainer {
   private CommandXboxController joystick = new CommandXboxController(0);
-  private SimpleMotor motor = new SimpleMotor(1, Volts.of(5));
+  private SimpleSpark spark = new SimpleSpark(1, Volts.of(5));
+  private SimpleTalon talon = new SimpleTalon(2, "rio", Volts.of(5));
 
   public RobotContainer() {
     configureBindings();
   }
 
   private void configureBindings() {
-    joystick.a().onTrue(motor.start());
-    joystick.a().onFalse(motor.stop());
+    joystick.a().onTrue(Commands.parallel(spark.start(), talon.start()));
+    joystick.a().onFalse(Commands.parallel(spark.stop(), talon.stop()));
   }
 
   public Command getAutonomousCommand() {
